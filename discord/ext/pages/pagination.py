@@ -1022,11 +1022,11 @@ class Paginator(discord.ui.View):
 
     async def edit(
         self,
-        message: discord.Message,
+        message: discord.Message | discord.WebhookMessage | discord.InteractionMessage,
         suppress: bool | None = None,
         allowed_mentions: discord.AllowedMentions | None = None,
         delete_after: float | None = None,
-    ) -> discord.Message | None:
+    ) -> discord.Message | discord.WebhookMessage | discord.InteractionMessage | None:
         """Edits an existing message to replace it with the paginator contents.
 
         .. note::
@@ -1035,7 +1035,7 @@ class Paginator(discord.ui.View):
 
         Parameters
         ----------
-        message: :class:`discord.Message`
+        message: Union[:class:`discord.Message`, :class:`discord.WebhookMessage`, :class:`discord.InteractionMessage`]
             The message to edit with the paginator.
         suppress: :class:`bool`
             Whether to suppress embeds for the message. This removes
@@ -1054,11 +1054,11 @@ class Paginator(discord.ui.View):
 
         Returns
         -------
-        Optional[:class:`discord.Message`]
+        Optional[:class:`discord.Message`, :class:`discord.WebhookMessage`, :class:`discord.InteractionMessage`]
             The message that was edited. Returns ``None`` if the operation failed.
         """
-        if not isinstance(message, discord.Message):
-            raise TypeError(f"expected Message not {message.__class__!r}")
+        if not isinstance(message, (discord.Message, discord.WebhookMessage, discord.InteractionMessage)):
+            raise TypeError(f"expected Message or WebhookMessage or InteractionMessage not {message.__class__!r}")
 
         self.update_buttons()
 
