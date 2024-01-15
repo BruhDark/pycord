@@ -428,7 +428,7 @@ class Paginator(discord.ui.View):
         self.loop_pages = loop_pages
         self.custom_view: discord.ui.View = custom_view
         self.trigger_on_display = trigger_on_display
-        self.message: discord.Message | discord.WebhookMessage | None = None
+        self.message: discord.Message | discord.WebhookMessage | discord.InteractionMessage | None = None
 
         if self.custom_buttons and not self.use_default_buttons:
             for button in custom_buttons:
@@ -692,8 +692,7 @@ class Paginator(discord.ui.View):
         files = page.update_files()
 
         if interaction:
-            await interaction.response.defer()  # needed to force webhook message edit route for files kwarg support
-            await interaction.followup.edit_message(
+            await interaction.edit_original_response(
                 message_id=self.message.id,
                 content=page.content,
                 embeds=page.embeds,
