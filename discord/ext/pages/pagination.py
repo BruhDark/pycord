@@ -692,6 +692,7 @@ class Paginator(discord.ui.View):
         files = page.update_files()
 
         if interaction:
+            await interaction.response.defer()
             await interaction.edit_original_response(
                 message_id=self.message.id,
                 content=page.content,
