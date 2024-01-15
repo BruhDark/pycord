@@ -1032,6 +1032,7 @@ class Paginator(discord.ui.View):
         .. note::
 
             If invoked from an interaction, you will still need to respond to the interaction.
+            If passing a :class:`discord.Webhookmessage` object, `delete_after` will not be used.
 
         Parameters
         ----------
@@ -1073,16 +1074,27 @@ class Paginator(discord.ui.View):
         self.user = message.author
 
         try:
-            self.message = await message.edit(
-                content=page_content.content,
-                embeds=page_content.embeds,
-                files=page_content.files,
-                attachments=[],
-                view=self,
-                suppress=suppress,
-                allowed_mentions=allowed_mentions,
-                delete_after=delete_after,
-            )
+            if isinstance(message, discord.WebhookMessage):  # Had to remove the delete_after kwarg, the method does not support it
+                self.message = await message.edit(
+                    content=page_content.content,
+                    embeds=page_content.embeds,
+                    files=page_content.files,
+                    attachments=[],
+                    view=self,
+                    suppress=suppress,
+                    allowed_mentions=allowed_mentions,
+                )
+            else:
+                self.message = await message.edit(
+                    content=page_content.content,
+                    embeds=page_content.embeds,
+                    files=page_content.files,
+                    attachments=[],
+                    view=self,
+                    suppress=suppress,
+                    allowed_mentions=allowed_mentions,
+                    delete_after=delete_after,
+                )
         except (discord.NotFound, discord.Forbidden):
             pass
 
