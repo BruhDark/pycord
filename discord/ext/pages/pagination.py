@@ -73,6 +73,7 @@ class PaginatorButton(discord.ui.Button):
         custom_id: str = None,
         row: int = 0,
         loop_label: str = None,
+        paginator: Paginator = None
     ):
         super().__init__(
             label=label if label or emoji else button_type.capitalize(),
@@ -88,7 +89,7 @@ class PaginatorButton(discord.ui.Button):
         self.style = style
         self.disabled = disabled
         self.loop_label = self.label if not loop_label else loop_label
-        self.paginator = None
+        self.paginator = paginator
 
     async def callback(self, interaction: discord.Interaction):
         """|coro|
@@ -695,7 +696,7 @@ class Paginator(discord.ui.View):
         if interaction:
             print("3")
             await interaction.response.defer()
-            await interaction.followup.edit(
+            await interaction.followup.edit_message(
                 message_id=self.message.id,
                 content=page.content,
                 embeds=page.embeds,
@@ -737,6 +738,7 @@ class Paginator(discord.ui.View):
                 label="<<",
                 style=discord.ButtonStyle.blurple,
                 row=self.default_button_row,
+                paginator=self
             ),
             PaginatorButton(
                 "prev",
@@ -744,12 +746,14 @@ class Paginator(discord.ui.View):
                 style=discord.ButtonStyle.red,
                 loop_label="↪",
                 row=self.default_button_row,
+                paginator=self
             ),
             PaginatorButton(
                 "page_indicator",
                 style=discord.ButtonStyle.gray,
                 disabled=True,
                 row=self.default_button_row,
+                paginator=self
             ),
             PaginatorButton(
                 "next",
@@ -757,12 +761,14 @@ class Paginator(discord.ui.View):
                 style=discord.ButtonStyle.green,
                 loop_label="↩",
                 row=self.default_button_row,
+                paginator=self
             ),
             PaginatorButton(
                 "last",
                 label=">>",
                 style=discord.ButtonStyle.blurple,
                 row=self.default_button_row,
+                paginator=self
             ),
         ]
         for button in default_buttons:
@@ -1078,7 +1084,8 @@ class Paginator(discord.ui.View):
         self.user = message.author
 
         try:
-            if isinstance(message, discord.WebhookMessage):  # Had to remove the delete_after kwarg, the method does not support it
+            # Had to remove the delete_after kwarg, WebhookMessage.edit does not support it.
+            if isinstance(message, discord.WebhookMessage):
                 self.message = await message.edit(
                     content=page_content.content,
                     embeds=page_content.embeds,
