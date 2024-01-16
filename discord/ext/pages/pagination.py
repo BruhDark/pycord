@@ -676,6 +676,7 @@ class Paginator(discord.ui.View):
         :class:`~discord.Message`
             The message associated with the paginator.
         """
+        print("1")
         self.update_buttons()
         self.current_page = page_number
         if self.show_indicator:
@@ -685,15 +686,16 @@ class Paginator(discord.ui.View):
 
         page = self.pages[page_number]
         page = self.get_page_content(page)
-
+        print("2")
         if page.custom_view:
             self.update_custom_view(page.custom_view)
 
         files = page.update_files()
 
         if interaction:
+            print("3")
             await interaction.response.defer()
-            await interaction.edit_original_response(
+            await interaction.followup.edit(
                 message_id=self.message.id,
                 content=page.content,
                 embeds=page.embeds,
@@ -702,6 +704,7 @@ class Paginator(discord.ui.View):
                 view=self,
             )
         else:
+            print("4")
             await self.message.edit(
                 content=page.content,
                 embeds=page.embeds,
@@ -711,6 +714,7 @@ class Paginator(discord.ui.View):
             )
         if self.trigger_on_display:
             await self.page_action(interaction=interaction)
+        print("5")
 
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
         if self.usercheck:
